@@ -12,13 +12,13 @@ BLUE = '\033[94m'
 ENDC = '\033[0m'
 
 
-hashes = {}
+ref_for_hash = {}
 
 refs = os.popen('git show-ref', 'r', 0)
 for line in refs:
     refmatch = pref.match(line)
     if refmatch:
-        hashes[refmatch.group('hash')] = refmatch.group('name')
+        ref_for_hash[refmatch.group('hash')] = refmatch.group('name')
     else:
         print "Unexpected ref format"
         print line
@@ -29,17 +29,16 @@ graph = os.popen(
 for line in graph:
     graphmatch = pgraph.match(line)
     if graphmatch:
-        has_ref = False
-        for hash in hashes.keys():
-            if hash.startswith(graphmatch.group('hash')):
-                print "%s%s : %s %s" % (
-                    graphmatch.group('graph'),
-                    graphmatch.group('hash'),
-                    BOLD + BLUE + '[' + hashes[hash] + ']' + ENDC,
-                    graphmatch.group('message'),
-                )
-                has_ref = True
-        if not has_ref:
+        if ref_for_hash.has_key(graphmatch.group('longhash')):
+            print "%s%s : %s %s" % (
+                graphmatch.group('graph'),
+                graphmatch.group('hash'),
+                BOLD + BLUE + 
+                '[' + ref_for_hash[graphmatch.group('longhash')] + ']' 
+                + ENDC,
+                graphmatch.group('message'),
+            )
+        else:
             print "%s%s : %s" % (
                 graphmatch.group('graph'),
                 graphmatch.group('hash'),
