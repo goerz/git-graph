@@ -4,8 +4,9 @@ import re
 import sys
 
 pref = re.compile(r'^(?P<hash>[0-9a-f]+) refs/(?P<name>.*)')
-pgraph = re.compile(r'^(?P<graph>[\s\\/\*|]+)(?P<longhash>[0-9a-f]+) (?P<hash>[0-9a-f]+) : (?P<message>.*)')
-pgraph_join = re.compile(r'^(?P<graph>[\s\\/\*|]+)')
+pgraph1 = re.compile(r'^(?P<graph>[\s\\/\*|]+)(?P<longhash>[0-9a-f]+) (?P<hash>[0-9a-f]+) : (?P<info>.*)$')
+pgraph2 = re.compile(r'^(?P<graph>[\s\\/\*|]+) (?P<message>.*)$')
+pgraph3 = re.compile(r'^(?P<graph>[\s\\/\*|]+)$')
 
 BOLD = '\033[1m'
 BLUE = '\033[94m'
@@ -25,9 +26,9 @@ for line in refs:
         sys.exit()
 
 graph = os.popen(
-'git log --all --pretty=format:\'%H %h : %s\' --date-order --graph', 'r', 0)
+'git log --all --pretty=format:\'%H %h : %an %ai %n %s%n\' --date-order --graph', 'r', 0)
 for line in graph:
-    graphmatch = pgraph.match(line)
+    graphmatch = pgraph1.match(line)
     if graphmatch:
         if ref_for_hash.has_key(graphmatch.group('longhash')):
             print "%s%s : %s %s" % (
@@ -36,16 +37,22 @@ for line in graph:
                 BOLD + BLUE + 
                 '[' + ref_for_hash[graphmatch.group('longhash')] + ']' 
                 + ENDC,
-                graphmatch.group('message'),
+                graphmatch.group('info'),
             )
         else:
             print "%s%s : %s" % (
                 graphmatch.group('graph'),
                 graphmatch.group('hash'),
-                graphmatch.group('message'),
+                graphmatch.group('info'),
             )
-    else:
-        if pgraph_join.match(line):
+    else :
+        graphmatch = pgraph2.match(line)
+        if graphmatch:
+            print "%s %s" % (
+                graphmatch.group('graph'),
+                graphmatch.group('message')
+            )
+        elif pgraph3.match(line):
             sys.stdout.write(line)
         else:
             print "Unexpected graph format"
