@@ -25,6 +25,7 @@ This script shows an ascii-art graph of all git commits in the repository.
 import os
 import re
 import sys
+import pydb # DEBUG
 from optparse import OptionParser
 
 
@@ -45,7 +46,11 @@ def get_refs():
     for line in refs:
         refmatch = pref.match(line)
         if refmatch:
-            ref_for_hash[refmatch.group('hash')] = refmatch.group('name')
+            name = refmatch.group('name')
+            if ref_for_hash.has_key(refmatch.group('hash')):
+                ref_for_hash[refmatch.group('hash')].append(name)
+            else:
+                ref_for_hash[refmatch.group('hash')] = [name]
         else:
             print "Unexpected ref format"
             print line
@@ -105,6 +110,7 @@ def main(options=None):
     Print a graph of all commits to stdout.
     """
     ref_for_hash = get_refs()
+    #pydb.set_trace() # DEBUG
     if ref_for_hash is None: return 1
 
     pgraph1 = re.compile(
@@ -151,9 +157,11 @@ def main(options=None):
                 if len(commit_hash) > 0:
                     commit_hash += ": "
                 commit_info  = graphmatch.group('info')
-                if ref_for_hash.has_key(graphmatch.group('longhash')):
-                    commit_ref = ref_for_hash[graphmatch.group('longhash')]
-                    commit_ref = format_commit_ref(commit_ref)
+                longhash = graphmatch.group('longhash')
+                if ref_for_hash.has_key(longhash):
+                    commit_refs = [format_commit_ref(commit_ref) for commit_ref 
+                                  in ref_for_hash[graphmatch.group('longhash')]]
+                    commit_ref = "".join(commit_refs)
 
         if not handled:
             graphmatch = pgraph2.match(line)
