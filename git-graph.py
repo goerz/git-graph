@@ -25,7 +25,6 @@ This script shows an ascii-art graph of all git commits in the repository.
 import os
 import re
 import sys
-import pydb # DEBUG
 from optparse import OptionParser
 
 
@@ -110,7 +109,6 @@ def main(options=None):
     Print a graph of all commits to stdout.
     """
     ref_for_hash = get_refs()
-    #pydb.set_trace() # DEBUG
     if ref_for_hash is None: return 1
 
     pgraph1 = re.compile(
