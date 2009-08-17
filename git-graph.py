@@ -200,9 +200,10 @@ if __name__ == "__main__":
     arg_parser.add_option('--svn', action='store_true', dest='svn',
                         default=False, help="Print svn revision number")
     arg_parser.add_option('--date', action='store', dest='date', 
-                          default='default',
+                          default='short',
                           help="Set date format. Possible values are "
-                          "'relative', 'local', 'iso', 'fc', 'short', 'raw', "
+                          "'relative', 'local', 'iso', 'fc', "
+                          "'short' (default), 'raw', "
                           "'default'. For an explanation, see 'git help log'")
     arg_parser.add_option('--max-length', action='store', type=int,
                           dest='max_length', default=0,
