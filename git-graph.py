@@ -1,4 +1,27 @@
 #!/usr/bin/python
+############################################################################
+#    Copyright (C) 2009 by Michael Goerz                                   #
+#    http://www.physik.fu-berlin.de/~goerz                                 #
+#                                                                          #
+#    This program is free software; you can redistribute it and/or modify  #
+#    it under the terms of the GNU General Public License as published by  #
+#    the Free Software Foundation; either version 3 of the License, or     #
+#    (at your option) any later version.                                   #
+#                                                                          #
+#    This program is distributed in the hope that it will be useful,       #
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#    GNU General Public License for more details.                          #
+#                                                                          #
+#    You should have received a copy of the GNU General Public License     #
+#    along with this program; if not, write to the                         #
+#    Free Software Foundation, Inc.,                                       #
+#    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
+############################################################################
+"""
+This script shows an ascii-art graph of all git commits in the repository. 
+
+"""
 import os
 import re
 import sys
@@ -13,6 +36,9 @@ ENDC = '\033[0m'
 
 
 def get_refs():
+    """
+    Collect a dictionary of all the references in the repository
+    """
     ref_for_hash = {}
     refs = os.popen('git show-ref', 'r', 0)
     pref = re.compile(r'^(?P<hash>[0-9a-f]+) refs/(?P<name>.*)')
@@ -28,6 +54,9 @@ def get_refs():
 
 
 def main(options=None):
+    """
+    Print a graph of all commits to stdout.
+    """
     ref_for_hash = get_refs()
     if ref_for_hash is None: return 1
     graph = os.popen(
