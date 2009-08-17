@@ -87,32 +87,39 @@ def main(options=None):
         r'^(?P<graph>[\s\\/\*|]+)$')
     if options.no_color: turn_off_colors()
     for line in graph:
+
         graphmatch = pgraph1.match(line)
+
         if graphmatch:
+
             if ref_for_hash.has_key(graphmatch.group('longhash')):
-                hash = graphmatch.group('hash')
-                ref = ref_for_hash[graphmatch.group('longhash')]
-                if ref.startswith('remotes/'):
-                    ref = ref.replace('remotes/', 'r:', 1)
-                    ref = BOLD + BLUE + '[' + ref + ']' + ENDC
+                commit_hash = graphmatch.group('hash')
+                commit_ref = ref_for_hash[graphmatch.group('longhash')]
+                if commit_ref.startswith('remotes/'):
+                    commit_ref = commit_ref.replace('remotes/', 'r:', 1)
+                    commit_ref = BOLD + BLUE + '[' + commit_ref + ']' + ENDC
                 elif ref.startswith('heads/'):
-                    ref = ref.replace('heads/', '', 1)
-                    ref = BOLD + GREEN + '[' + ref + ']' + ENDC
+                    commit_ref = commit_ref.replace('heads/', '', 1)
+                    commit_ref = BOLD + GREEN + '[' + commit_ref + ']' + ENDC
                 else:
-                    ref = BOLD + RED + '[' + ref + ']' + ENDC
+                    ref = BOLD + RED + '[' + commit_ref + ']' + ENDC
                 print "%s%s : %s %s" % (
                     graphmatch.group('graph'),
-                    hash,
-                    ref,
+                    commit_hash,
+                    commit_ref,
                     graphmatch.group('info'),
                 )
+
             else:
+
                 print "%s%s : %s" % (
                     graphmatch.group('graph'),
                     graphmatch.group('hash'),
                     graphmatch.group('info'),
                 )
+
         else :
+
             graphmatch = pgraph2.match(line)
             if graphmatch:
                 print "%s %s" % (
@@ -125,6 +132,7 @@ def main(options=None):
                 print "Unexpected graph format"
                 print line
                 return 1
+
     return 0
 
 
