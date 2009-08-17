@@ -53,6 +53,22 @@ def get_refs():
     return ref_for_hash
 
 
+def turn_off_colors():
+    """
+    Disable all (global) color codes
+    """
+    global BOLD
+    BOLD = ''
+    global RED
+    RED = ''
+    global BLUE
+    BLUE = ''
+    global GREEN
+    GREEN = ''
+    global ENDC
+    ENDC = ''
+
+
 def main(options=None):
     """
     Print a graph of all commits to stdout.
@@ -69,6 +85,7 @@ def main(options=None):
         r'^(?P<graph>[\s\\/\*|]+) (?P<message>.*)$')
     pgraph3 = re.compile(
         r'^(?P<graph>[\s\\/\*|]+)$')
+    if options.no_color: turn_off_colors()
     for line in graph:
         graphmatch = pgraph1.match(line)
         if graphmatch:
@@ -117,6 +134,8 @@ if __name__ == "__main__":
         
     arg_parser.add_option('--no-hash', action='store_true', dest='no_hash',
                         default=False, help="Don't print the commit hash")
+    arg_parser.add_option('--no-color', action='store_true', dest='no_color',
+                        default=False, help="Don't mark refs with color")
     options, args = arg_parser.parse_args(sys.argv)
 
     if len(args) > 1:
