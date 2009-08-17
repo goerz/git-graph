@@ -88,6 +88,18 @@ def format_commit_ref(commit_ref):
     return commit_ref
 
 
+def get_svn_revision(commit_hash):
+    """ 
+    For a given commit hash, get the svn revision number
+    """
+    commit_message = os.popen( "git log %s -n 1" % commit_hash)
+    for line in commit_message:
+        if 'git-svn-id' in line:
+            match = re.search('@([0-9]+)', line)
+            return "(R"+match.group(1)+")"
+    return ''
+
+
 def main(options=None):
     """
     Print a graph of all commits to stdout.
@@ -129,8 +141,14 @@ def main(options=None):
             if graphmatch:
                 handled = True
                 commit_graph = graphmatch.group('graph')
+                if options.svn:
+                    commit_hash = get_svn_revision(graphmatch.group('hash'))
+                    commit_hash += " "
                 if not options.no_hash:
-                    commit_hash  = graphmatch.group('hash') + " : "
+                    commit_hash  += graphmatch.group('hash')
+                    commit_hash += " "
+                if len(commit_hash) > 0:
+                    commit_hash += ": "
                 commit_info  = graphmatch.group('info')
                 if ref_for_hash.has_key(graphmatch.group('longhash')):
                     commit_ref = ref_for_hash[graphmatch.group('longhash')]
@@ -172,6 +190,8 @@ if __name__ == "__main__":
                         default=False, help="Don't mark refs with color")
     arg_parser.add_option('--oneline', action='store_true', dest='oneline',
                         default=False, help="Print only one line per commit")
+    arg_parser.add_option('--svn', action='store_true', dest='svn',
+                        default=False, help="Print svn revision number")
     arg_parser.add_option('--date', action='store', dest='date', 
                           default='default',
                           help="Set date format. Possible values are "
