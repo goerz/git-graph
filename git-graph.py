@@ -79,12 +79,12 @@ def format_commit_ref(commit_ref):
     """
     if commit_ref.startswith('remotes/'):
         commit_ref = commit_ref.replace('remotes/', 'r:', 1)
-        commit_ref = BOLD + BLUE + '[' + commit_ref + ']' + ENDC
-    elif ref.startswith('heads/'):
+        commit_ref = BOLD + BLUE + '[' + commit_ref + '] ' + ENDC
+    elif commit_ref.startswith('heads/'):
         commit_ref = commit_ref.replace('heads/', '', 1)
-        commit_ref = BOLD + GREEN + '[' + commit_ref + ']' + ENDC
+        commit_ref = BOLD + GREEN + '[' + commit_ref + '] ' + ENDC
     else:
-        commit_ref = BOLD + RED + '[' + commit_ref + ']' + ENDC
+        commit_ref = BOLD + RED + '[' + commit_ref + '] ' + ENDC
     return commit_ref
 
 
@@ -94,9 +94,7 @@ def main(options=None):
     """
     ref_for_hash = get_refs()
     if ref_for_hash is None: return 1
-    graph = os.popen(
-        'git log --all --pretty=format:\'%H %h : %an %ai %n %s%n\' '+
-        '--date-order --graph', 'r', 0)
+
     pgraph1 = re.compile(
         r'^(?P<graph>[\s\\/\*|]+)(?P<longhash>[0-9a-f]+) '
         +r'(?P<hash>[0-9a-f]+) : (?P<info>.*)$')
@@ -104,49 +102,54 @@ def main(options=None):
         r'^(?P<graph>[\s\\/\*|]+) (?P<message>.*)$')
     pgraph3 = re.compile(
         r'^(?P<graph>[\s\\/\*|]+)$')
+
+    graph = os.popen(
+        'git log --all --pretty=format:\'%H %h : %an %ai %n %s%n\' '+
+        '--date-order --graph', 'r', 0)
+
     if options.no_color: turn_off_colors()
+
     for line in graph:
 
-        graphmatch = pgraph1.match(line)
+        commit_graph = ''
+        commit_hash = ''
+        commit_ref = ''
+        commit_info = ''
 
-        if graphmatch:
+        handled = False
 
-            if ref_for_hash.has_key(graphmatch.group('longhash')):
+        if not handled:
+            graphmatch = pgraph1.match(line)
+            if graphmatch:
+                handled = True
+                commit_graph = graphmatch.group('graph')
+                if not options.no_hash:
+                    commit_hash  = graphmatch.group('hash') + " : "
+                commit_info  = graphmatch.group('info')
+                if ref_for_hash.has_key(graphmatch.group('longhash')):
+                    commit_ref = ref_for_hash[graphmatch.group('longhash')]
+                    commit_ref = format_commit_ref(commit_ref)
 
-                commit_hash = graphmatch.group('hash')
-
-                commit_ref = ref_for_hash[graphmatch.group('longhash')]
-                commit_ref = format_commit_ref(commit_ref)
-
-                print "%s%s : %s %s" % (
-                    graphmatch.group('graph'),
-                    commit_hash,
-                    commit_ref,
-                    graphmatch.group('info'),
-                )
-
-            else:
-
-                print "%s%s : %s" % (
-                    graphmatch.group('graph'),
-                    graphmatch.group('hash'),
-                    graphmatch.group('info'),
-                )
-
-        else :
-
+        if not handled:
             graphmatch = pgraph2.match(line)
             if graphmatch:
-                print "%s %s" % (
-                    graphmatch.group('graph'),
-                    graphmatch.group('message')
-                )
-            elif pgraph3.match(line):
-                sys.stdout.write(line)
-            else:
-                print "Unexpected graph format"
-                print line
-                return 1
+                handled = True
+                commit_graph = graphmatch.group('graph')
+                commit_info  = graphmatch.group('message')
+
+        if not handled:
+            graphmatch = pgraph3.match(line)
+            if graphmatch:
+                handled = True
+                commit_graph = line.rstrip()
+
+        if not handled:
+            print "Unexpected graph format"
+            print line
+            return 1
+
+        line = "%s%s%s%s" % (commit_graph, commit_hash, commit_ref, commit_info)
+        print(line)
 
     return 0
 
