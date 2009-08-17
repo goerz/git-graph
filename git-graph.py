@@ -105,8 +105,9 @@ def main(options=None):
 
     if options.oneline:
         graph = os.popen(
-            'git log --all --pretty=format:\'%H %h : %an %ai -- %s\' '+
-            '--date-order --graph', 'r', 0)
+            "git log --all --date=%s " % options.date+
+            "--pretty=format:'%H %h : %cd -- %s' "+
+            "--date-order --graph", 'r', 0)
     else:
         graph = os.popen(
             'git log --all --pretty=format:\'%H %h : %an %ai %n %s%n\' '+
@@ -171,11 +172,16 @@ if __name__ == "__main__":
                         default=False, help="Don't mark refs with color")
     arg_parser.add_option('--oneline', action='store_true', dest='oneline',
                         default=False, help="Print only one line per commit")
+    arg_parser.add_option('--date', action='store', dest='date', 
+                          default='default',
+                          help="Set date format. Possible values are "
+                          "'relative', 'local', 'iso', 'fc', 'short', 'raw', "
+                          "'default'. For an explanation, see 'git help log'")
     arg_parser.add_option('--max-length', action='store', type=int,
                           dest='max_length', default=0,
                           help="Set maximum line length")
-    options, args = arg_parser.parse_args(sys.argv)
 
+    options, args = arg_parser.parse_args(sys.argv)
     if len(args) > 1:
         os.chdir(args[1])
 
