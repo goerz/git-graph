@@ -93,7 +93,9 @@ def main(options=None):
         if graphmatch:
 
             if ref_for_hash.has_key(graphmatch.group('longhash')):
+
                 commit_hash = graphmatch.group('hash')
+
                 commit_ref = ref_for_hash[graphmatch.group('longhash')]
                 if commit_ref.startswith('remotes/'):
                     commit_ref = commit_ref.replace('remotes/', 'r:', 1)
@@ -102,7 +104,8 @@ def main(options=None):
                     commit_ref = commit_ref.replace('heads/', '', 1)
                     commit_ref = BOLD + GREEN + '[' + commit_ref + ']' + ENDC
                 else:
-                    ref = BOLD + RED + '[' + commit_ref + ']' + ENDC
+                    commit_ref = BOLD + RED + '[' + commit_ref + ']' + ENDC
+
                 print "%s%s : %s %s" % (
                     graphmatch.group('graph'),
                     commit_hash,
