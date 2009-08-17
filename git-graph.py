@@ -149,6 +149,8 @@ def main(options=None):
             return 1
 
         line = "%s%s%s%s" % (commit_graph, commit_hash, commit_ref, commit_info)
+        if ((options.max_length > 0) and (len(line) > options.max_length)):
+            line = line[:options.max_length]
         print(line)
 
     return 0
@@ -157,11 +159,14 @@ def main(options=None):
 if __name__ == "__main__":
     arg_parser = OptionParser(usage = "git_graph.py [options] [path] ",
                               description = __doc__)
-        
+
     arg_parser.add_option('--no-hash', action='store_true', dest='no_hash',
                         default=False, help="Don't print the commit hash")
     arg_parser.add_option('--no-color', action='store_true', dest='no_color',
                         default=False, help="Don't mark refs with color")
+    arg_parser.add_option('--max-length', action='store', type=int,
+                          dest='max_length', default=0,
+                          help="Set maximum line length")
     options, args = arg_parser.parse_args(sys.argv)
 
     if len(args) > 1:
