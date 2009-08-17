@@ -103,9 +103,14 @@ def main(options=None):
     pgraph3 = re.compile(
         r'^(?P<graph>[\s\\/\*|]+)$')
 
-    graph = os.popen(
-        'git log --all --pretty=format:\'%H %h : %an %ai %n %s%n\' '+
-        '--date-order --graph', 'r', 0)
+    if options.oneline:
+        graph = os.popen(
+            'git log --all --pretty=format:\'%H %h : %an %ai -- %s\' '+
+            '--date-order --graph', 'r', 0)
+    else:
+        graph = os.popen(
+            'git log --all --pretty=format:\'%H %h : %an %ai %n %s%n\' '+
+            '--date-order --graph', 'r', 0)
 
     if options.no_color: turn_off_colors()
 
@@ -164,6 +169,8 @@ if __name__ == "__main__":
                         default=False, help="Don't print the commit hash")
     arg_parser.add_option('--no-color', action='store_true', dest='no_color',
                         default=False, help="Don't mark refs with color")
+    arg_parser.add_option('--oneline', action='store_true', dest='oneline',
+                        default=False, help="Print only one line per commit")
     arg_parser.add_option('--max-length', action='store', type=int,
                           dest='max_length', default=0,
                           help="Set maximum line length")
