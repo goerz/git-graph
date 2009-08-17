@@ -69,6 +69,25 @@ def turn_off_colors():
     ENDC = ''
 
 
+def format_commit_ref(commit_ref):
+    """
+    Format a commit reference
+
+    Remote refs are prefixed with 'r:' and colored in blue.
+    Local refs are colored in green.
+    Unknown refs are colored in red.
+    """
+    if commit_ref.startswith('remotes/'):
+        commit_ref = commit_ref.replace('remotes/', 'r:', 1)
+        commit_ref = BOLD + BLUE + '[' + commit_ref + ']' + ENDC
+    elif ref.startswith('heads/'):
+        commit_ref = commit_ref.replace('heads/', '', 1)
+        commit_ref = BOLD + GREEN + '[' + commit_ref + ']' + ENDC
+    else:
+        commit_ref = BOLD + RED + '[' + commit_ref + ']' + ENDC
+    return commit_ref
+
+
 def main(options=None):
     """
     Print a graph of all commits to stdout.
@@ -97,14 +116,7 @@ def main(options=None):
                 commit_hash = graphmatch.group('hash')
 
                 commit_ref = ref_for_hash[graphmatch.group('longhash')]
-                if commit_ref.startswith('remotes/'):
-                    commit_ref = commit_ref.replace('remotes/', 'r:', 1)
-                    commit_ref = BOLD + BLUE + '[' + commit_ref + ']' + ENDC
-                elif ref.startswith('heads/'):
-                    commit_ref = commit_ref.replace('heads/', '', 1)
-                    commit_ref = BOLD + GREEN + '[' + commit_ref + ']' + ENDC
-                else:
-                    commit_ref = BOLD + RED + '[' + commit_ref + ']' + ENDC
+                commit_ref = format_commit_ref(commit_ref)
 
                 print "%s%s : %s %s" % (
                     graphmatch.group('graph'),
