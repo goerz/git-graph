@@ -51,8 +51,8 @@ def get_refs():
             else:
                 ref_for_hash[refmatch.group('hash')] = [name]
         else:
-            print "Unexpected ref format"
-            print line
+            print("Unexpected ref format")
+            print(line)
             return None
     return ref_for_hash
 
@@ -175,8 +175,8 @@ def main(options=None):
                 commit_graph = line.rstrip()
 
         if not handled:
-            print "Unexpected graph format"
-            print line
+            print("Unexpected graph format")
+            print(line)
             return 1
 
         line = "%s%s%s%s" % (commit_graph, commit_hash, commit_ref, commit_info)
