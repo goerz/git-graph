@@ -19,8 +19,12 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ############################################################################
 """
-This script shows an ascii-art graph of all git commits in the repository. 
+This script shows an ascii-art graph of all git commits in the repository.
+If the output is not redirected, it is shown in a pager.
 
+The command is more or less  a wrapper around 'git log --graph', but with
+better formatting of the refs and the option to show svn commit numbers, which
+is useful for planning a svn merge.
 """
 import os
 import re
@@ -51,8 +55,8 @@ def get_refs():
             else:
                 ref_for_hash[refmatch.group('hash')] = [name]
         else:
-            print("Unexpected ref format")
-            print(line)
+            print >> sys.stderr, ("Unexpected ref format")
+            print >> sys.stderr, (line)
             return None
     return ref_for_hash
 
@@ -106,8 +110,15 @@ def get_svn_revision(commit_hash):
 
 def main(options=None):
     """
-    Print a graph of all commits to stdout.
+    Print a graph of all commits
     """
+    if sys.stdout.isatty():
+        pager = os.popen(options.pager, 'w')
+    else:
+        pager = sys.stdout
+        if (not options.color):
+            turn_off_colors()
+
     ref_for_hash = get_refs()
     if ref_for_hash is None: return 1
 
@@ -175,14 +186,14 @@ def main(options=None):
                 commit_graph = line.rstrip()
 
         if not handled:
-            print("Unexpected graph format")
-            print(line)
+            print >> sys.stderr, ("Unexpected graph format")
+            print >> sys.stderr, (line)
             return 1
 
         line = "%s%s%s%s" % (commit_graph, commit_hash, commit_ref, commit_info)
         if ((options.max_length > 0) and (len(line) > options.max_length)):
             line = line[:options.max_length]
-        print(line)
+        print >> pager, (line)
 
     return 0
 
@@ -195,10 +206,16 @@ if __name__ == "__main__":
                         default=False, help="Don't print the commit hash")
     arg_parser.add_option('--no-color', action='store_true', dest='no_color',
                         default=False, help="Don't mark refs with color")
+    arg_parser.add_option('--color', action='store_true', dest='color',
+                        default=False, help="Mark refs with color even if "
+                        "output is redirected")
     arg_parser.add_option('--oneline', action='store_true', dest='oneline',
                         default=False, help="Print only one line per commit")
     arg_parser.add_option('--svn', action='store_true', dest='svn',
                         default=False, help="Print svn revision number")
+    arg_parser.add_option('--pager', action='store', dest='pager', 
+                          default='less -RS', help="Set pager "
+                          "(default: less -RS)")
     arg_parser.add_option('--date', action='store', dest='date', 
                           default='short',
                           help="Set date format. Possible values are "
@@ -213,4 +230,7 @@ if __name__ == "__main__":
     if len(args) > 1:
         os.chdir(args[1])
 
-    sys.exit(main(options))
+    try:
+        sys.exit(main(options))
+    except IOError:
+        pass
