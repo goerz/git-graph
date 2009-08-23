@@ -33,9 +33,9 @@ from optparse import OptionParser
 
 
 BOLD = '\033[1m'
-RED = '\033[91m'
-BLUE = '\033[94m'
-GREEN = '\033[92m'
+RED = '\033[31m'
+BLUE = '\033[34m'
+GREEN = '\033[32m'
 ENDC = '\033[0m'
 
 
