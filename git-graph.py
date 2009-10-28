@@ -134,12 +134,12 @@ def main(options=None):
         graph = os.popen(
             "git log --all --date=%s " % options.date +
             "--pretty=format:'%H %h : %an %ad -- %s' "+
-            "--date-order --graph", 'r', 0)
+            "--graph", 'r', 0)
     else:
         graph = os.popen(
             "git log --all --date=%s " % options.date +
             "--pretty=format:'%H %h : %an %ad %n %s%n' "+
-            "--date-order --graph", 'r', 0)
+            "--graph", 'r', 0)
 
     if options.no_color: turn_off_colors()
 
