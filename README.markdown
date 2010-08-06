@@ -4,7 +4,7 @@
 
 Author: [Michael Goerz](http://michaelgoerz.net)
 
-The git-graph script shows an ascii-art graph of all git commits in the
+The git-graph.py script shows an ascii-art graph of all git commits in the
 repository. If the output is not redirected, it is shown in a pager.  The
 command is more or less  a wrapper around 'git log --graph', but with better
 formatting of the refs and the option to show svn commit numbers, which is
@@ -14,7 +14,7 @@ This code is licensed under the [GPL](http://www.gnu.org/licenses/gpl.html)
 
 ## Install ##
 
-Store the git-graph script anywhere in your `$PATH`
+Store the git-graph.py script anywhere in your `$PATH`
 
 ## Dependencies ##
 
