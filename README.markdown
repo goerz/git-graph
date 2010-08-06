@@ -6,7 +6,7 @@ Author: [Michael Goerz](http://michaelgoerz.net)
 
 The git-graph.py script shows an ascii-art graph of all git commits in the
 repository. If the output is not redirected, it is shown in a pager.  The
-command is more or less  a wrapper around 'git log --graph', but with better
+command is more or less  a wrapper around `git log --graph`, but with better
 formatting of the refs and the option to show svn commit numbers, which is
 useful for planning a svn merge.
 
