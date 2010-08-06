@@ -20,7 +20,7 @@ Store the git-graph script anywhere in your `$PATH`
 
 * You must have [git][1] installed
 
-[3]: http://git-scm.com/
+[1]: http://git-scm.com/
 
 ## Usage ##
 
