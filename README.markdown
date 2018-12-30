@@ -1,8 +1,27 @@
 # git-graph
 
-[http://github.com/goerz/git-graph](http://github.com/goerz/git-graph)
+**Note (Dec 29, 2018): This script is obsolete.**
 
-Author: [Michael Goerz](http://michaelgoerz.net)
+As of Git 2.12, you can put the following in your `~/.gitconfig`:
+
+
+    [alias]
+        graph = "log --all --graph --decorate --pretty=format:'%C(#005f87)%h%Creset :%C(#d75f00)%d%Creset %C(#005f87)%an%Creset %C(#008700)%cd (%cr)%n%s%n' --date=short"
+    [color]
+        ui = true
+    [color "decorate"]
+        HEAD = "#d75f00"
+        branch = "#d75f00"
+        tag = "#d75f00"
+    [log]
+        graphColors = normal
+
+This enables `git graph` via an alias (no script needed).
+
+You can combine it with further options, e.g. `--name-only`, `--name-only`, `--stat`, `--date=...`.
+
+
+------------------------------
 
 The git-graph.py script shows an ascii-art graph of all git commits in the
 repository. If the output is not redirected, it is shown in a pager.  The
@@ -24,8 +43,8 @@ Store the git-graph.py script anywhere in your `$PATH`
 
 ## Usage ##
 
-    Usage: git_graph.py [options] [path] 
-    
+    Usage: git_graph.py [options] [path]
+
     Options:
       -h, --help            show this help message and exit
       --no-hash             Don't print the commit hash
